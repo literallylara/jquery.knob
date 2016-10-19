@@ -7,7 +7,7 @@ jquery.knob.js
 
 `$(selector).knob({options})`
 
-Options may be provided via `data-` attributes as well
+Options may be provided via `data-` attributes as well.  
 The value of the knobs is presented as normalized percentages (0..1) for type = vol, (-1..+1) for type = pan
 
 ## Options
