@@ -60,11 +60,11 @@
 
 		_create: function() {
 			
-			let o = this.options
+			var o = this.options
 
 			// parse options
 			Object.keys(o).forEach(k => {
-				let d = this.element.data(k.toLowerCase());
+				var d = this.element.data(k.toLowerCase());
 				o[k] = d !== undefined ? d : o[k]
 			})
 
@@ -170,13 +170,13 @@
 
 		_setValue: function(v)
 		{
-			let vol = this.options.type == "vol"
+			var vol = this.options.type == "vol"
 			
 			v = this._clamp(v,vol ? 0 : -1,1)
 
-			let arc = this.options.arc/180*Math.PI/2
-			let off = this.options.offset - (vol ? this.options.arc/2 : 0)
-			let ang = (vol ? arc*v*2 : arc*v)
+			var arc = this.options.arc/180*Math.PI/2
+			var off = this.options.offset - (vol ? this.options.arc/2 : 0)
+			var ang = (vol ? arc*v*2 : arc*v)
 
 			this._$stroke.css({
 				strokeDasharray: `${ Math.abs(ang) } ${ Math.PI*2 }`,
@@ -220,8 +220,8 @@
 		{
 			e.preventDefault()
 
-			let range = e.shiftKey ? this._rangeFine : this.options.range
-			let val = this._grabValue + (this._grabOffset-e.pageY)/range * (this.options.invertRange ? -1 : 1)
+			var range = e.shiftKey ? this._rangeFine : this.options.range
+			var val = this._grabValue + (this._grabOffset-e.pageY)/range * (this.options.invertRange ? -1 : 1)
 			
 			this._setValue(Math.floor(val*this.options.steps)/this.options.steps)
 			this._pageY = e.pageY
@@ -241,7 +241,7 @@
 
 		_updateTooltip: function(e)
 		{
-			let follow = this.options.tooltip == "follow"
+			var follow = this.options.tooltip == "follow"
 			
 			this._$tooltip.css({
 				top:  follow ? e.pageY - this.element.offset().top : "50%",
@@ -252,6 +252,7 @@
 		_reset: function(e)
 		{
 			this._setValue(this.options.resetValue)
+			this.element.trigger("reset", this.options.resetValue)
 		},
 
 		_destroy: function(e)
