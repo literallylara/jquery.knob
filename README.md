@@ -53,4 +53,4 @@ When the knob is being turned, the original element also has a `.grab` class.
 
 ## Demo
 
-[https://rawgit.com/literallylara/jquery.knob/master/demo.html](https://raw.githubusercontent.com/literallylara/jquery.knob/master/demo.html)
+[https://rawgit.com/literallylara/jquery.knob/master/demo.html](https://rawgit.com/literallylara/jquery.knob/master/demo.html)
