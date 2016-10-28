@@ -1,4 +1,4 @@
-/*! jquery.knob v0.0.1
+/*! jquery.knob v0.0.2
  * 
  * Copyright (c) 2016 @literallylara
  * Under the MIT license:
@@ -47,8 +47,8 @@
 		},
 
 		_$svg:     null,
-		_$stroke:    null,
-		__$tooltip: null,
+		_$stroke:  null,
+		_$tooltip: null,
 
 		_value:      null,
 		_grabValue:  null,
@@ -64,13 +64,13 @@
 
 			// parse options
 			Object.keys(o).forEach(k => {
-				var d = this.element.data(k.toLowerCase());
+				var d = this.element.attr("data-"+k);
 				o[k] = d !== undefined ? d : o[k]
 			})
 
 			// prepare svg
 			this._$svg = $(`
-			<svg viewBox="0 0 2 2">
+			<svg class="${o.classPrefix}-svg" viewBox="0 0 2 2">
 				<circle class="${o.classPrefix}-stroke" cx="1" cy="1" r="1" clip-path="url(#knob-clip${this.uuid})" />
 				<clipPath id="knob-clip${this.uuid}"><circle cx="1" cy="1" r="1" /></clipPath>
 			</svg>`).appendTo(this.element)
