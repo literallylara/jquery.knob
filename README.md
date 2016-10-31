@@ -10,32 +10,35 @@ jquery.knob.js
 Options may be provided via `data-` attributes as well.  
 
 Note:
-* The value of the knobs is presented as normalized percentages (0..1) for type = vol, (-1..+1) for type = pan  
+* The normalized value of the knobs is presented as percentages (0..1) for type = vol, (-1..+1) for type = pan  
 * The stroke is being rendered with a stroke-dasharray on a svg circle element.
 
 ## Options
 
-| option           | default  | description |
-| ---------------- | -------- | ----------- |
-| bgColor        | "#000" | background color of the svg circle and the pointer
-| fgColor        | "#fff" | color of stroke and knob
-| type           | "vol"  | either `"vol"` or `"pan"` |
-| tooltip        | true   | show a tooltip while turning indicating the current value, set to "follow" when you want it to follow the mouse
-| turnWith       | null   | the element to apply the rotate transform to as well
-| arc            | 360    | the maximum amount of degrees the knob can turn |
-| steps          | 100    | the amount of values the button can hold |
-| offset         | 0      | angle offset in degrees |
-| range          | "auto" | how many pixels the mouse has to move for one rotation ` = element height) |
-| invertRange    | false  | whether to invert the direction of rotation when moving the mouse |
-| fineTuneFactor | 10     | scales the `range` value when holding down shift
-| value          | 0      | the initial value |
-| resetValue     | 0      | the value to reset to when double-clicking the knob |
-| classPrefix    | "knob" | enables you to chose a different class prefix |
+| option         | default | description                                               |
+| -------------- | ------- | --------------------------------------------------------- |
+| bgColor        | "#000"  | background color of the svg circle and the pointer
+| fgColor        | "#fff"  | color of stroke and knob
+| type           | "vol"   | either `"vol"` or `"pan"` |
+| min            | 0|-100  | minimum possible value for the knob |
+| max            | 100|100 | maximum possible value for the knob |
+| tooltip        | true    | show a tooltip while turning indicating the current value, set to "follow" when you want it to follow the mouse
+| turnWith       | null    | the element to apply the rotate transform to as well
+| arc            | 360     | the maximum amount of degrees the knob can turn |
+| steps          | 100     | the amount of values the button can hold |
+| offset         | 0       | angle offset in degrees |
+| range          | "auto"  | how many pixels the mouse has to move for one rotation ` = element height) |
+| invertRange    | false   | whether or not to invert the direction of rotation when moving the mouse |
+| round          | true    | whether or not to round the knob's value to whole integers |
+| fineTuneFactor | 10      | scales the `range` value when holding down shift
+| value          | 0       | the initial value |
+| resetValue     | 0       | the value to reset to when double-clicking the knob |
+| classPrefix    | "knob"  | enables you to chose a different class prefix |
 
 ## Events
 
 `grab`, `turn`, `release`, `reset` (should be self-explanatory)  
-Each event takes the following paramters: `event`, `value`
+Each event takes the following paramters: `event`, `value`, `valueNormalized`
 
 ## Methods
 

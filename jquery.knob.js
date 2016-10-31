@@ -1,4 +1,4 @@
-/*! jquery.knob v0.0.2
+/*! jquery.knob v0.0.3
  * 
  * Copyright (c) 2016 @literallylara
  * Under the MIT license:
@@ -36,9 +36,12 @@
 			arc:    360,
 			steps:  100,
 			offset:   0,
+			min: null,
+			max: null,
 
 			range: "auto",
 			invertRange: false,
+			round: true,
 			fineTuneFactor: 10,
 
 			value: 0,
@@ -50,7 +53,7 @@
 		_$stroke:  null,
 		_$tooltip: null,
 
-		_value:      null,
+		_valueNormalized: null,
 		_grabValue:  null,
 		_grabOffset: null,
 
@@ -67,6 +70,9 @@
 				var d = this.element.attr("data-"+k);
 				o[k] = d !== undefined ? d : o[k]
 			})
+
+			o.min = +o.min || (o.type == "vol" ?   0 : -100)
+			o.max = +o.max || (o.type == "vol" ? 100 :  100)
 
 			// prepare svg
 			this._$svg = $(`
@@ -156,7 +162,7 @@
 			this._rangeFine = o.range * o.fineTuneFactor
 
 			// set initial value
-			this._setValue(o.value)
+			this._setValue(this._normalizeValue(o.value))
 
 			this.element.css("position", "relative")
 			this.element.on("mousedown.knob", this._grab.bind(this))
@@ -170,31 +176,35 @@
 
 		_setValue: function(v)
 		{
-			var vol = this.options.type == "vol"
-			
-			v = this._clamp(v,vol ? 0 : -1,1)
+			var o = this.options
 
-			var arc = this.options.arc/180*Math.PI/2
-			var off = this.options.offset - (vol ? this.options.arc/2 : 0)
-			var ang = (vol ? arc*v*2 : arc*v)
+			var vol = o.type == "vol"
+			var val = this._clamp(v,vol ? 0 : -1,1)
+			var arc = o.arc/180*Math.PI/2
+			var off = o.offset - (vol ? o.arc/2 : 0)
+			var ang = (vol ? arc*val*2 : arc*val)
 
 			this._$stroke.css({
 				strokeDasharray: `${ Math.abs(ang) } ${ Math.PI*2 }`,
-				transform: `rotate(${ 90 + off }deg) scale(-1,${ v > 0 || vol ? -1 : 1 })`
+				transform: `rotate(${ 90 + off }deg) scale(-1,${ val > 0 || vol ? -1 : 1 })`
 			})
 
 			this._$pointerContainer.css({ transform: `rotate(${ ang/Math.PI*180 + off }deg)` })
-			this.options.turnWith && $(this.options.turnWith).css({ transform: `rotate(${ ang/Math.PI*180 + off }deg)` })
+			o.turnWith && $(o.turnWith).css({ transform: `rotate(${ ang/Math.PI*180 + off }deg)` })
 
-			this._value = v
-			this.element.trigger("turn", this._value)
+			this._valueNormalized = val
+			this._value = o.min + (o.max-o.min) * this._clamp(vol?v:(v+1)/2,0,1)
+
+			o.round && (this._value = Math.round(this._value))
+
+			this.element.trigger("turn", [this._value, this._valueNormalized])
 		},
 
 		_grab: function(e)
 		{
-			this._grabValue = this._value
+			this._grabValue = this._valueNormalized
 			this._grabOffset = e.pageY
-			this.element.trigger("grab", this._value)
+			this.element.trigger("grab", [this._value, this._valueNormalized])
 
 			$(document).on("mouseup.knob", this._release.bind(this))
 			$(document).on("mousemove.knob", this._turn.bind(this))
@@ -210,7 +220,7 @@
 			if (e.keyCode && 16 && this._shiftKey != e.shiftKey)
 			{
 				this._grabOffset = this._pageY
-				this._grabValue = this._value
+				this._grabValue = this._valueNormalized
 			}
 
 			this._shiftKey = e.shiftKey
@@ -233,7 +243,7 @@
 		{
 			$(document).off("mouseup.knob mousemove.knob keyup.knob keydown.knob")
 
-			this.element.trigger("release", this._value)
+			this.element.trigger("release", [this._value, this._valueNormalized])
 			this.element.removeClass("grab")
 			
 			this.options.tooltip && this._$tooltip.hide()
@@ -246,13 +256,13 @@
 			this._$tooltip.css({
 				top:  follow ? e.pageY - this.element.offset().top : "50%",
 				left: follow ? e.pageX - this.element.offset().left + 40 : "50%"
-			}).text(Math.round(this._value*100)).show()
+			}).text(this._value).show()
 		},
 
 		_reset: function(e)
 		{
-			this._setValue(this.options.resetValue)
-			this.element.trigger("reset", this.options.resetValue)
+			this._setValue(this._normalizeValue(this.options.resetValue))
+			this.element.trigger("reset", [this._value, this._valueNormalized])
 		},
 
 		_destroy: function(e)
@@ -266,11 +276,22 @@
 			this.element.find("." + this.options.classPrefix + "-tooltip").remove()
 		},
 
+		_normalizeValue: function(v)
+		{
+			var o = this.options
+
+			v = this._clamp(v,o.min,o.max)
+			v = (v-o.min)/(o.max-o.min)
+			v = o.vol ? v : (v-.5)*2
+
+			return v
+		},
+
 		value: function(v)
 		{
-			if (v)
+			if (typeof +v == "number")
 			{
-				this._setValue(v)
+				this._setValue(this._normalizeValue(v))
 			}
 			else
 			{
